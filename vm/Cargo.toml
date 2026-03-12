@@ -1,0 +1,21 @@
+[package]
+name = "vm"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+common = { workspace = true }
+ratatui = { workspace = true, optional = true }
+crossterm = { workspace = true, optional = true }
+
+[features]
+# This is powerful: Only compile visualizer hooks when needed
+visualizer = ["dep:ratatui", "dep:crossterm"]
+default = []
+gui = ["dep:ratatui", "dep:crossterm"]
+
+[[bin]]
+name = "corewar"
+path = "src/main.rs"

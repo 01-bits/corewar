@@ -1,0 +1,22 @@
+[workspace]
+resolver = "2"
+members = [
+    "asm",
+    "common",
+    "dism",
+    "visualizer",
+    "vm",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Mustapha Boutoub & Team"]
+# ADD THIS LINE:
+repository = "https://github.com/kill-ux/corewar" 
+
+[workspace.dependencies]
+common = { path = "common" }
+vm = { path = "vm" }
+ratatui = "0.26"
+crossterm = "0.27"
