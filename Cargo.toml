@@ -1,19 +1,12 @@
 [workspace]
 resolver = "2"
-members = [
-    "asm",
-    "common",
-    "dism",
-    "visualizer",
-    "vm",
-]
+members = ["asm", "common", "disasm", "visualizer", "vm"]
 
 [workspace.package]
 version = "0.1.0"
-edition = "2021"
-authors = ["Team"]
-# ADD THIS LINE:
-repository = "https://github.com/kill-ux/corewar" 
+edition = "2024"
+authors = ["kill-ux", "abdrahmanbalouri", "aminehabchi", "Sphinex0 "]
+repository = "https://github.com/kill-ux/corewar"
 
 [workspace.dependencies]
 common = { path = "common" }
