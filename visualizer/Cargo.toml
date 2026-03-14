@@ -7,7 +7,6 @@ repository.workspace = true
 
 [dependencies]
 common = { workspace = true }
-# Link to the VM and turn on the gui features defined above
 vm = { workspace = true, features = ["gui"] }
 ratatui = { workspace = true }
 crossterm = { workspace = true }

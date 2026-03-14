@@ -1,7 +1,14 @@
 pub const MEM_SIZE: u16 = 4096;
 pub const CHAMP_MAX_SIZE: u16 = 682;
-pub const REG_NUMBER: u8 = 16;
+pub const REG_NUMBER: u8 = 16;  // register number ::/>>>
 pub const CYCLE_TO_DIE: u16 = 1536;
 pub const CYCLE_DELTA: u8 = 15;
 pub const NBR_LIVE: u8 = 21;
 pub const MAX_CHECKS: u8 = 10;
+pub const COREWAR_EXEC_MAGIC: u32 = 0x00ea83f3; // version of file .cor>>//
+pub const PROG_NAME_LENGTH: usize = 128;
+pub const COMMENT_LENGTH: usize = 2048;
+pub const HEADER_SIZE: usize = 4 + PROG_NAME_LENGTH + 4 + 4 + COMMENT_LENGTH + 4; //  header  of  file>>>
+pub const IDX_MOD: i32 = 512;    // if Has Idx true we nedd to module 512 if false dont do module;;>>>
+pub const DUMP_ROW_SIZE: usize = 32; //  flad -d   whe print  32 in every  single line>>>
+pub const MAX_PLAYERS: usize = 4; 

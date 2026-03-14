@@ -28,6 +28,7 @@
 ///
 /// Each variant corresponds to a specific Corewar instruction, with discriminant
 /// values matching their opcode values (1-16).
+use crate::types::ParamKind;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OpType {
     Live = 1,
@@ -45,7 +46,7 @@ pub enum OpType {
     Lld,
     Lldi,
     Lfork,
-    Aff,
+    Nop,
 }
 
 impl OpType {
@@ -67,13 +68,37 @@ impl OpType {
             OpType::Lld => "lld",
             OpType::Lldi => "lldi",
             OpType::Lfork => "lfork",
-            OpType::Aff => "aff",
+            OpType::Nop => "nop",
         }
     }
 
     /// Returns the opcode byte value for this operation type.
     pub fn opcode(&self) -> u8 {
         *self as u8
+    }
+
+    pub fn allowed_param_kinds(&self) -> &'static [&'static [ParamKind]] {
+        const R: &[ParamKind] = &[ParamKind::Register];
+        const D: &[ParamKind] = &[ParamKind::Direct];
+        const ID: &[ParamKind] = &[ParamKind::Indirect, ParamKind::Direct];
+        const RID: &[ParamKind] = &[ParamKind::Register, ParamKind::Indirect, ParamKind::Direct];
+        const RD: &[ParamKind] = &[ParamKind::Register, ParamKind::Direct];
+        const RI: &[ParamKind] = &[ParamKind::Register, ParamKind::Indirect];
+
+        match self {
+            OpType::Live => &[D],
+            OpType::Ld => &[ID, R],
+            OpType::St => &[R, RI],
+            OpType::Add | OpType::Sub => &[R, R, R],
+            OpType::And | OpType::Or | OpType::Xor => &[RID, RID, R],
+            OpType::Zjmp => &[D],
+            OpType::Ldi => &[RID, RD, R],
+            OpType::Sti => &[R, RID, RD],
+            OpType::Fork | OpType::Lfork => &[D],
+            OpType::Lld => &[ID, R],
+            OpType::Lldi => &[RID, RD, R],
+            OpType::Nop => &[R],
+        }
     }
 }
 
@@ -93,6 +118,22 @@ pub struct Op {
     pub has_pcode: bool,
     /// Whether this operation supports indexed addressing mode
     pub has_idx: bool,
+}
+
+impl Op {
+    pub fn param_size(&self, kind: ParamKind) -> usize {
+        match kind {
+            ParamKind::Register => 1,
+            ParamKind::Indirect => 2,
+            ParamKind::Direct => {
+                if self.has_idx {
+                    2
+                } else {
+                    4
+                }
+            }
+        }
+    }
 }
 
 /// A constant array containing all 16 standard Corewar operations.
@@ -206,10 +247,19 @@ pub const OP_TABLE: [Op; 16] = [
         has_idx: true,
     },
     Op {
-        op_type: OpType::Aff,
+        op_type: OpType::Nop,
         nb_params: 1,
         cycles: 2,
         has_pcode: true,
         has_idx: false,
     },
 ];
+
+pub fn op_by_opcode(opcode: u8) -> Option<&'static Op> {
+    if (1..=OP_TABLE.len() as u8).contains(&opcode) {
+        Some(&OP_TABLE[(opcode - 1) as usize])
+    } else {
+        None
+    }
+}
+
