@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = ["asm", "common", "disasm", "visualizer", "vm"]
+default-members = ["vm"]
 
 [workspace.package]
 version = "0.1.0"
