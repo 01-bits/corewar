@@ -1,51 +1,36 @@
 // use crate::error::fatal!;
 use crate::fatal;
 use common::constants::MAX_PLAYERS;
-use std::env;
+use std::env::args;
 use std::path::PathBuf;
 use std::process;
 
 pub fn parse_args() -> (Option<u64>, Vec<PathBuf>) {
-    let mut args = env::args().peekable();
-    let program = args.next().unwrap_or_else(|| "corewar".to_string());
-    if args.peek().is_none() {
-        usage(&program);
-        process::exit(0);
-    }
-
-    let mut dump_cycle = None;
-    let mut champions = Vec::new();
+    let mut args = args();
+    let program = args.next().unwrap();
+    let mut nb_cycles = None;
+    let mut players: Vec<PathBuf> = vec![];
     while let Some(arg) = args.next() {
         if arg == "-d" {
-            if dump_cycle.is_none()
-                && let Some(value) = args.next()
+            if let Some(nb_string) = args.next()
+                && let Ok(nb) = nb_string.parse::<u64>()
             {
-                dump_cycle = Some(value.parse::<u64>().unwrap_or_else(|_| {
-                    fatal!("error: NB_CYCLES must be a non-negative integer");
-                }));
-            } else {
-                fatal!("error: duplicate -d flag OR missing argments");
+                nb_cycles = Some(nb);
             }
         } else if arg.ends_with(".cor") {
-            champions.push(PathBuf::from(arg));
-        } else if arg == "--help" || arg == "-h" {
-            usage(&program);
-            process::exit(0);
+            players.push(PathBuf::from(arg));
         } else {
-            fatal!("error: unexpected argument '{arg}'");
+            fatal!("Error: this file dosn't end with .cor != {}", arg);
         }
     }
 
-    if champions.is_empty() {
+    if players.len() == 0 || players.len() > MAX_PLAYERS {
         usage(&program);
-        process::exit(0);
     }
-    if champions.len() > MAX_PLAYERS {
-        fatal!("error: too many players (max {MAX_PLAYERS})");
-    }
-    (dump_cycle, champions)
+
+    (nb_cycles, players)
 }
 
 fn usage(program: &str) {
-    println!("Usage: {program} [-d NB_CYCLES] champion1.cor [champion2.cor ... champion4.cor]");
+    fatal!("Usage: {program} [-d NB_CYCLES] champion1.cor [champion2.cor ... champion4.cor]");
 }
